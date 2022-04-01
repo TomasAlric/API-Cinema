@@ -4,6 +4,8 @@ import com.api.cinemamanagementsystem.dtos.UserDTO;
 import com.api.cinemamanagementsystem.dtos.UserInsertDTO;
 import com.api.cinemamanagementsystem.dtos.UserUpdateDTO;
 import com.api.cinemamanagementsystem.services.UserService;
+import com.api.cinemamanagementsystem.services.exceptions.CpfException;
+import com.api.cinemamanagementsystem.services.validations.CpfValid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,11 +38,21 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDTO> insert(@Valid @RequestBody UserInsertDTO dto) {
+
+        CpfValid cpfValid = new CpfValid(dto.getCpf());
+
+        if (cpfValid.validation()) {
+            System.out.println("CPF is valid");
+        } else {
+            throw new CpfException("Please type a valid CPF");
+        }
+
         UserDTO newDto = userService.insert(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.created(uri).body(newDto);
     }
+
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<UserDTO> update(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO dto) {

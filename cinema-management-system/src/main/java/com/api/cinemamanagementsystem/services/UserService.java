@@ -35,6 +35,9 @@ public class UserService implements UserDetailsService{
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private AuthService authService;
+
     @Transactional(readOnly = true)
     public Page<UserDTO> findAllPaged(Pageable pageable) {
         Page<User> list = userRepository.findAll(pageable);
@@ -50,6 +53,9 @@ public class UserService implements UserDetailsService{
 
     @Transactional
     public UserDTO insert(UserDTO dto) {
+
+
+            authService.validateIfUserAdmin(dto.getId());
             User entity = new User();
             copyDtoToEntity(dto, entity);
             entity = userRepository.save(entity);
@@ -58,6 +64,7 @@ public class UserService implements UserDetailsService{
 
     @Transactional
     public UserDTO update(Long id, UserDTO dto) {
+        authService.validateIfUserAdmin(dto.getId());
 
         try {
             User entity = userRepository.getById(id);
@@ -71,6 +78,7 @@ public class UserService implements UserDetailsService{
     }
 
     public void delete(Long id) {
+        authService.validateIfUserAdmin(id);
         try {
             userRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {

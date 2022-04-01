@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class RoleDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 

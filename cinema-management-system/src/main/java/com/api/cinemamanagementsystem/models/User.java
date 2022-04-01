@@ -2,6 +2,7 @@ package com.api.cinemamanagementsystem.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -19,9 +20,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@EqualsAndHashCode
 @Table(name = "users")
 public class User implements UserDetails, Serializable {
     private static final long serialVersionUID = 1L;
@@ -55,6 +57,13 @@ public class User implements UserDetails, Serializable {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    @OneToMany(mappedBy = "users")
+    private Set<Ticket> tickets = new HashSet<>();
+
+    public String toString(){
+        return cpf;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getAuthority()))
@@ -84,5 +93,14 @@ public class User implements UserDetails, Serializable {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public boolean hasHole(String roleName) {
+        for (Role role : roles) {
+            if (role.getAuthority().equals(roleName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

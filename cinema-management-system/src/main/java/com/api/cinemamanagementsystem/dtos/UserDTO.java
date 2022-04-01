@@ -4,8 +4,7 @@ import com.api.cinemamanagementsystem.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -36,14 +35,13 @@ public class UserDTO implements Serializable {
 
     Set<RoleDTO> roles = new HashSet<>();
 
-    public UserDTO(User entity){
-        this.id = entity.getId();
-        this.firstName = entity.getFirstName();
-        this.lastName = entity.getLastName();
-        this.birthDate = entity.getBirthDate();
-        this.email = entity.getEmail();
-        this.cpf = entity.getCpf();
+    public UserDTO(User entity) {
+        id = entity.getId();
+        firstName = entity.getFirstName();
+        lastName = entity.getLastName();
+        birthDate = entity.getBirthDate();
+        email = entity.getEmail();
+        cpf = entity.getCpf();
         entity.getRoles().forEach(role -> this.roles.add(new RoleDTO(role)));
     }
-
 }
