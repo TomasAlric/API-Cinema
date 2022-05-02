@@ -3,6 +3,7 @@ package com.api.cinemamanagementsystem.services;
 import com.api.cinemamanagementsystem.dtos.TicketDTO;
 import com.api.cinemamanagementsystem.dtos.UserDTO;
 import com.api.cinemamanagementsystem.models.Ticket;
+import com.api.cinemamanagementsystem.repositories.RoomRepository;
 import com.api.cinemamanagementsystem.repositories.TicketRepository;
 import com.api.cinemamanagementsystem.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,11 @@ import java.util.Optional;
 
 @Service
 public class TicketService {
-    
+
     @Autowired
-    TicketRepository repository;
+    private TicketRepository repository;
+
+    private RoomRepository roomRepository;
 
     @Transactional(readOnly = true)
     public Page<TicketDTO> findAllPaged(Pageable pageable) {
@@ -69,5 +72,23 @@ public class TicketService {
         entity.setDiscount(dto.getDiscount());
         entity.setSeat(dto.getSeat());
         entity.setValueOfTicket(dto.getValueOfTicket());
+    }
+
+    /**
+     * Vende um ingresso garantindo a quantidade disponível de assentos diponíveis (considerando a capacidade da sala).
+     *
+     * @param {@link TicketDTO}
+     */
+    public TicketDTO buyNewTicket(TicketDTO dto) {
+        final var room = roomRepository.findById(dto.getSessionDTO().getRoomDTO().getId());
+        final var totalSeats = room.get().getSeats();
+
+        final var totalTicketSoldByRoom = repository.coundSoldTicketsBySessionAndRom(dto.getSessionDTO().getRoomDTO().getId());
+
+        if (totalSeats >= totalTicketSoldByRoom) {
+            throw new RuntimeException("Não há mais assentos disponíveis");
+        }
+
+        return insert(dto);
     }
 }

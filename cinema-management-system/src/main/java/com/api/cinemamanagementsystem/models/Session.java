@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -29,18 +30,15 @@ public class Session implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String synopsis;
 
-    private String room;
-
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private LocalDateTime dateSession;
 
+    @OneToMany(mappedBy = "session")
+    private List<Ticket> tickets;
+
     @ManyToOne
-    @JoinColumn(name = "ticket_id")
-    private Ticket tickets;
-
-    @OneToMany(mappedBy = "sessions")
-    Set<Room> rooms = new HashSet<>();
-
+    @JoinColumn(nullable = false, name = "room_id")
+    private Room room;
 
 
 }

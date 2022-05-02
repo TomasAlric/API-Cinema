@@ -26,6 +26,10 @@ public class TicketDTO implements Serializable {
 
     private Long usersId;
 
+    private UserDTO user;
+
+    private SessionDTO sessionDTO;
+
     Set<SessionDTO> sessions = new HashSet<>();
 
     public TicketDTO(Ticket entity){
