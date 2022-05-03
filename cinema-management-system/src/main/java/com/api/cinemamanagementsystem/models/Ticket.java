@@ -34,12 +34,8 @@ public class Ticket implements Serializable {
     @JoinColumn(name = "user_id")
     private User users;
 
-    @OneToMany(mappedBy = "tickets")
-    Set<Session> sessions = new HashSet<>();
-
-
     @ManyToOne
-    @JoinColumn(name = "room_id", nullable = false)
-    private Room room;
+    @JoinColumn(name = "session_id")
+    private Session session;
 
 }

@@ -24,7 +24,8 @@ public class RoomDTO implements Serializable {
         id = entity.getId();
         roomName = entity.getRoomName();
         seats = entity.getSeats();
-        sessionsId = entity.getSessions().getId();
+        sessionsId =1L;
+                //entity.getSessions().getId();
     }
 
 }

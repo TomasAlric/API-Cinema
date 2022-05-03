@@ -58,7 +58,7 @@ public class ResourceExceptionHandler {
         err.setTimestamp(Instant.now());
         err.setStatus(status.value());
         err.setError("Integrity Violation");
-        err.setMessage("Please type a valid CPF");
+        err.setMessage(e.getMessage());
         err.setPath(request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }

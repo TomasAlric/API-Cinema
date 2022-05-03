@@ -28,10 +28,33 @@ public class Room  implements Serializable {
     private Integer seats;
 
     @OneToMany(mappedBy = "room")
-    private List<Ticket> tickets = new ArrayList<>();
-
-    @ManyToOne
-    @JoinColumn(name = "session_id")
-    private Session sessions;
+    private List<Session> sessions;
 
 }
+/**
+APPROACH 1
+    ROOM
+        |id| title|
+        | 1| sala do tomas |
+
+
+SESSION
+     |room_id| date| session_id
+     | 1 | 2019-02-12 | 1
+     | 1 | 2018-02-12 | 2
+
+
+ APPROACH 2 (N X N)
+     ROOM
+     |id| title|
+     | 1| sala do tomas |
+
+     SESSION
+      | date| session_id
+      | 2019-02-12 | 1
+      | 2018-02-12 | 2
+
+     ROOM_SESSION (N x N)
+        | session_id | room_id | 3 | date
+
+*/

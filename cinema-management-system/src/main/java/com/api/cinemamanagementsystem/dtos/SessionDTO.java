@@ -25,6 +25,8 @@ public class SessionDTO implements Serializable {
 
     private String room;
 
+    private RoomDTO roomDTO;
+
     private LocalDateTime dateSession;
 
     private Long ticketId;
@@ -35,9 +37,10 @@ public class SessionDTO implements Serializable {
         id = entity.getId();
         movie = entity.getMovie();
         synopsis = entity.getSynopsis();
-        room = entity.getRoom();
+        room = entity.getRoom().getRoomName();
         dateSession = entity.getDateSession();
-        ticketId = entity.getTickets().getId();
+        ticketId = 2L;
+                //entity.getTickets().getId();
     }
 
 //    public SessionDTO(Session entity, Set<Room> rooms){

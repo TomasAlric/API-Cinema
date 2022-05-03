@@ -16,10 +16,11 @@ import java.net.URI;
 public class TicketController {
 
     @Autowired
-    TicketService service;
+    private TicketService service;
 
     @GetMapping
     public ResponseEntity<Page<TicketDTO>> findAll(Pageable pageable) {
+
 
         Page<TicketDTO> list = service.findAllPaged(pageable);
         return ResponseEntity.ok().body(list);
@@ -33,8 +34,8 @@ public class TicketController {
 
     @PostMapping
     public ResponseEntity<TicketDTO> insert(@RequestBody TicketDTO dto) {
+        final var newDto = service.buyNewTicket(dto);
 
-        TicketDTO newDto = service.insert(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.created(uri).body(newDto);

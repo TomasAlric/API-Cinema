@@ -18,7 +18,7 @@ import java.util.Optional;
 public class SessionService {
     
     @Autowired
-    SessionRepository repository;
+    private SessionRepository repository;
 
     @Transactional(readOnly = true)
     public Page<SessionDTO> findAllPaged(Pageable pageable) {
@@ -69,7 +69,7 @@ public class SessionService {
     private void copyDtoToEntity(SessionDTO dto, Session entity) {
         entity.setMovie(dto.getMovie());
         entity.setSynopsis(dto.getSynopsis());
-        entity.setRoom(dto.getRoom());
+        //entity.setRoom(dto.getRoomDto());
         entity.setDateSession(dto.getDateSession());
 
     }
