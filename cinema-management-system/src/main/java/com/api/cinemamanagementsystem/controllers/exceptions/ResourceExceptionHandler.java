@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Instant;
 
 @ControllerAdvice
@@ -50,6 +51,18 @@ public class ResourceExceptionHandler {
         err.setPath(request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
+
+//    @ExceptionHandler(DataIntegrityViolationException.class)
+//    public ResponseEntity<StandardError> integrity(DataIntegrityViolationException e, HttpServletRequest request) {
+//        HttpStatus status = HttpStatus.FAILED_DEPENDENCY;
+//        StandardError err = new StandardError();
+//        err.setTimestamp(Instant.now());
+//        err.setStatus(status.value());
+//        err.setError("A session, must be associated with a room");
+//        err.setMessage(e.getMessage());
+//        err.setPath(request.getRequestURI());
+//        return ResponseEntity.status(status).body(err);
+//    }
 
     @ExceptionHandler(CpfException.class)
     public ResponseEntity<StandardError> unique(CpfException e, HttpServletRequest request) {
