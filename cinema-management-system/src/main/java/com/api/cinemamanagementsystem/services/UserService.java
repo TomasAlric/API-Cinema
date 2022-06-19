@@ -7,6 +7,7 @@ import com.api.cinemamanagementsystem.models.User;
 import com.api.cinemamanagementsystem.repositories.RoleRepository;
 import com.api.cinemamanagementsystem.repositories.UserRepository;
 import com.api.cinemamanagementsystem.services.exceptions.DatabaseException;
+import com.api.cinemamanagementsystem.services.exceptions.IntegrityViolationException;
 import com.api.cinemamanagementsystem.services.exceptions.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ public class UserService implements UserDetailsService{
     @Transactional(readOnly = true)
     public Page<UserDTO> findAllPaged(Pageable pageable) {
         Page<User> list = userRepository.findAll(pageable);
-        return list.map(x -> new UserDTO(x));
+        return list.map(UserDTO::new);
     }
 
     @Transactional(readOnly = true)
@@ -53,13 +54,15 @@ public class UserService implements UserDetailsService{
 
     @Transactional
     public UserDTO insert(UserDTO dto) {
-
-
+        try {
             authService.validateIfUserAdmin(dto.getId());
             User entity = new User();
             copyDtoToEntity(dto, entity);
             entity = userRepository.save(entity);
             return new UserDTO(entity);
+        } catch (IntegrityViolationException e){
+            throw new IntegrityViolationException("This cpf already exists");
+        }
     }
 
     @Transactional
@@ -95,8 +98,6 @@ public class UserService implements UserDetailsService{
         entity.setEmail(dto.getEmail());
         entity.setBirthDate(dto.getBirthDate());
         entity.setCpf(dto.getCpf());
-
-
         entity.getRoles().clear();
         for (RoleDTO roleDtO : dto.getRoles()) {
             Role role = roleRepository.getById(roleDtO.getId());

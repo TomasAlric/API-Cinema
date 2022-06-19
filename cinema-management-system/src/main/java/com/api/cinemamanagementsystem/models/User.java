@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
@@ -33,15 +34,14 @@ public class User implements UserDetails, Serializable {
     private Long id;
 
     @NotBlank
-    @Size(min = 4, max = 10)
+    @Size(min = 4, max = 50)
     private String firstName;
 
     @NotBlank
-    @Size(min = 4, max = 10)
+    @Size(min = 4, max = 50)
     private String lastName;
 
-    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
 
     @Column(unique = true)
     private String cpf;
@@ -57,7 +57,7 @@ public class User implements UserDetails, Serializable {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "user")
     private Set<Ticket> tickets = new HashSet<>();
 
     public String toString(){

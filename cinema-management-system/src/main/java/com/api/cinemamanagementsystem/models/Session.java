@@ -37,8 +37,6 @@ public class Session implements Serializable {
     private List<Ticket> tickets;
 
     @ManyToOne
-    @JoinColumn(nullable = false, name = "room_id")
+    @JoinColumn(name = "room_id")
     private Room room;
-
-
 }

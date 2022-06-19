@@ -1,11 +1,13 @@
 package com.api.cinemamanagementsystem.services;
 
 import com.api.cinemamanagementsystem.dtos.TicketDTO;
-import com.api.cinemamanagementsystem.dtos.UserDTO;
+import com.api.cinemamanagementsystem.models.Session;
 import com.api.cinemamanagementsystem.models.Ticket;
+import com.api.cinemamanagementsystem.models.User;
 import com.api.cinemamanagementsystem.repositories.RoomRepository;
 import com.api.cinemamanagementsystem.repositories.TicketRepository;
 import com.api.cinemamanagementsystem.services.exceptions.ResourceNotFoundException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,12 +22,15 @@ public class TicketService {
     @Autowired
     private TicketRepository repository;
 
+    @Autowired
     private RoomRepository roomRepository;
+
+    private ModelMapper mapper;
 
     @Transactional(readOnly = true)
     public Page<TicketDTO> findAllPaged(Pageable pageable) {
         Page<Ticket> list = repository.findAll(pageable);
-        return list.map(x -> new TicketDTO(x));
+        return list.map(TicketDTO::new);
     }
 
     @Transactional(readOnly = true)
@@ -42,53 +47,34 @@ public class TicketService {
         entity = repository.save(entity);
         return new TicketDTO(entity);
     }
-//
-//    @Transactional
-//    public TicketDTO update(Long id, TicketDTO dto) {
-//        authService.validateIfUserAdmin(dto.getId());
-//
-//        try {
-//            User entity = repository.getById(id);
-//            copyDtoToEntity(dto,entity);
-//            entity = repository.save(entity);
-//            return new TicketDTO(entity);
-//        } catch (EntityNotFoundException e) {
-//            throw new ResourceNotFoundException("Id not found " + id);
-//        }
-//
-//    }
-//
-//    public void delete(Long id) {
-//        authService.validateIfUserAdmin(id);
-//        try {
-//            repository.deleteById(id);
-//        } catch (EmptyResultDataAccessException e) {
-//            throw new ResourceNotFoundException("Id not found" + id);
-//        } catch (DataIntegrityViolationException e) {
-//            throw new DatabaseException("Integrity violation");
-//        }
 
     private void copyDtoToEntity(TicketDTO dto, Ticket entity) {
         entity.setDiscount(dto.getDiscount());
         entity.setSeat(dto.getSeat());
         entity.setValueOfTicket(dto.getValueOfTicket());
+        Session session = new Session();
+        session.setId(dto.getSessionDTO().getId());
+        User user = new User();
+        user.setId(dto.getUserDTO().getId());
+        entity.setSession(session);
+        entity.setUser(user);
     }
 
     /**
-     * Vende um ingresso garantindo a quantidade disponível de assentos diponíveis (considerando a capacidade da sala).
+     * Vende um ingresso garantindo a quantidade disponível de assentos disponíveis (considerando a capacidade da sala).
      *
      * @param {@link TicketDTO}
      */
     public TicketDTO buyNewTicket(TicketDTO dto) {
         final var room = roomRepository.findById(dto.getSessionDTO().getRoomDTO().getId());
+
         final var totalSeats = room.get().getSeats();
 
-        final var totalTicketSoldByRoom = repository.coundSoldTicketsBySessionAndRom(dto.getSessionDTO().getRoomDTO().getId());
+        final var totalTicketSoldByRoom = repository.countSoldTicketsBySessionAndRoom(dto.getSessionDTO().getRoomDTO().getId());
 
-        if (totalSeats >= totalTicketSoldByRoom) {
-            throw new RuntimeException("Não há mais assentos disponíveis");
+        if (totalTicketSoldByRoom >= totalSeats) {
+            throw new RuntimeException("No more seats available");
         }
-
         return insert(dto);
     }
 }

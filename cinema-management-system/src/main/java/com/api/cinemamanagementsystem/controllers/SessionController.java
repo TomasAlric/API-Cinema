@@ -1,6 +1,7 @@
 package com.api.cinemamanagementsystem.controllers;
 
 import com.api.cinemamanagementsystem.dtos.SessionDTO;
+import com.api.cinemamanagementsystem.dtos.UserDTO;
 import com.api.cinemamanagementsystem.services.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping(value = "sessions")
+@RequestMapping(value = "/sessions")
 public class SessionController {
 
     @Autowired
@@ -54,10 +55,15 @@ public class SessionController {
 
     @PostMapping
     public ResponseEntity<SessionDTO> insert(@RequestBody SessionDTO dto) {
-
         SessionDTO newDto = service.insert(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.created(uri).body(newDto);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<UserDTO> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

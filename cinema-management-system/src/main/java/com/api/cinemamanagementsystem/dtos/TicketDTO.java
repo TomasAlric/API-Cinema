@@ -2,6 +2,7 @@ package com.api.cinemamanagementsystem.dtos;
 
 
 import com.api.cinemamanagementsystem.models.Ticket;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,12 +25,13 @@ public class TicketDTO implements Serializable {
 
     private Integer seat;
 
-    private Long usersId;
+    private Long userId;
 
-    private UserDTO user;
+    private UserDTO userDTO;
 
     private SessionDTO sessionDTO;
 
+    @JsonIgnore(value = true)
     Set<SessionDTO> sessions = new HashSet<>();
 
     public TicketDTO(Ticket entity){
@@ -37,7 +39,7 @@ public class TicketDTO implements Serializable {
         valueOfTicket = entity.getValueOfTicket();
         discount = entity.getDiscount();
         seat = entity.getSeat();
-        usersId = entity.getUsers().getId();
-      //  entity.getSessions().forEach(session -> this.sessions.add(new SessionDTO(session)));
+        userId = entity.getUser().getId();
+
     }
 }
